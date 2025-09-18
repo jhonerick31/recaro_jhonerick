@@ -15,9 +15,29 @@
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #00ff88;
             text-shadow: 2px 2px 8px rgba(0,255,136,0.8);
+        }
+
+        .create-btn {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 30px auto;
+            padding: 10px 20px;
+            background: #007acc;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 122, 204, 0.4);
+            transition: 0.3s;
+        }
+
+        .create-btn:hover {
+            background: #0099ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 122, 204, 0.6);
         }
 
         table {
@@ -92,6 +112,9 @@
 </head>
 <body>
     <h1>Student List</h1>
+    <!-- Create Button -->
+    <a href="<?= site_url('user/create'); ?>" class="create-btn">+ Add New Student</a>
+
     <table>
         <tr>
             <th>ID</th>
