@@ -63,7 +63,7 @@ $database['main'] = array(
     'port'		=> '3306',
     'username'	=> 'freedb_erick',
     'password'	=> '8P%7V*qd3*3k$JW',
-    'database'	=> 'freedb_studentdb',
+    'database'	=> 'freedb_studentsdb',
     'charset'	=> 'utf8mb4',
     'dbprefix'	=> '',
     // Optional for SQLite
