@@ -8,30 +8,34 @@ class UserController extends Controller {
     public function __construct()
     {
         parent::__construct();
+        $this->call->library('pagination');
+        $this->call->library('session');
+        $this->call->model('UserModel'); // siguraduhin na loaded ang model
     }
 
     public function index()
     {
-        // Get current page number
+        // ✅ Current page
         $page = 1;
         if (isset($_GET['page']) && !empty($_GET['page'])) {
-            $page = $this->io->get('page');
+            $page = (int)$this->io->get('page');
         }
 
-        // Get search query
+        // ✅ Search keyword
         $q = '';
         if (isset($_GET['q']) && !empty($_GET['q'])) {
             $q = trim($this->io->get('q'));
         }
 
+        // ✅ Records per page
         $records_per_page = 10;
 
-        // Get users with search + pagination
+        // ✅ Get paginated data from model
         $all = $this->UserModel->page($q, $records_per_page, $page);
         $data['users'] = $all['records'];
         $total_rows = $all['total_rows'];
 
-        // Setup pagination
+        // ✅ Pagination options
         $this->pagination->set_options([
             'first_link'     => '⏮ First',
             'last_link'      => 'Last ⏭',
@@ -39,9 +43,20 @@ class UserController extends Controller {
             'prev_link'      => '← Prev',
             'page_delimiter' => '&page='
         ]);
-        $this->pagination->set_theme('bootstrap'); // or 'tailwind', 'custom'
-        $this->pagination->initialize($total_rows, $records_per_page, $page, site_url('user').'?q='.$q);
-        $data['page'] = $this->pagination->paginate();
+        
+        $this->pagination->set_theme('bootstrap'); // or tailwind, custom
+
+        // ✅ Initialize pagination
+        $this->pagination->initialize(
+            $total_rows, 
+            $records_per_page, 
+            $page, 
+            site_url('user').'?q='.$q
+        );
+
+        // ✅ Paginated links + search
+        $data['page']   = $this->pagination->paginate();
+        $data['search'] = $q;
 
         $this->call->view('user/view', $data);
     }
@@ -50,7 +65,7 @@ class UserController extends Controller {
     {
         if ($this->io->method() == 'post') {
             $username = $this->io->post('username');
-            $email = $this->io->post('email');
+            $email    = $this->io->post('email');
 
             $data = [
                 'username' => $username,
