@@ -77,14 +77,23 @@ class FileSessionHandler extends Session implements SessionHandlerInterface {
      * @param string $session_name
      * @return bool
      */
-    public function open($save_path, $session_name): bool {
-        $this->save_path = $save_path;
-        $this->file_path = $this->save_path.DIRECTORY_SEPARATOR.$session_name . '_';
-        if ( !is_dir($this->save_path) ) {
-            mkdir($this->save_path, 0700, TRUE);
-        }
-        return true;
+   public function open($save_path, $session_name): bool {
+    if (empty($save_path)) {
+        error_log("Session save_path is empty!");
+        // Fallback to /var/www/html/sessions instead of sys_get_temp_dir if you prefer
+        $save_path = sys_get_temp_dir();
     }
+
+    $this->save_path = $save_path;
+    $this->file_path = $this->save_path . DIRECTORY_SEPARATOR . $session_name . '_';
+
+    if (!is_dir($this->save_path)) {
+        mkdir($this->save_path, 0700, true);
+    }
+
+    return true;
+}
+
 
     /**
      * Close
