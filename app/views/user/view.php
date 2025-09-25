@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View</title>
+    <title>Users</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,10 +20,15 @@
             text-shadow: 2px 2px 8px rgba(0,255,136,0.8);
         }
 
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 80%;
+            margin: 0 auto 20px auto;
+        }
+
         .create-btn {
-            display: block;
-            width: fit-content;
-            margin: 0 auto 30px auto;
             padding: 10px 20px;
             background: #007acc;
             color: white;
@@ -38,6 +43,31 @@
             background: #0099ff;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 122, 204, 0.6);
+        }
+
+        .search-form input[type="text"] {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            width: 200px;
+        }
+
+        .search-form button {
+            padding: 8px 14px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 6px;
+            background: #00cc66;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .search-form button:hover {
+            background: #00ff88;
+            transform: translateY(-2px);
         }
 
         table {
@@ -108,12 +138,26 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(255,0,0,0.5);
         }
+
+        .pagination {
+            width: 80%;
+            margin: 20px auto;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <h1>Student List</h1>
-    <!-- Create Button -->
-    <a href="<?= site_url('user/create'); ?>" class="create-btn">+ Add New Student</a>
+    <h1>User List</h1>
+
+    <!-- Top bar (Create + Search) -->
+    <div class="top-bar">
+        <a href="<?= site_url('user/create'); ?>" class="create-btn">+ Add New User</a>
+        
+        <form method="get" action="<?= site_url('user'); ?>" class="search-form">
+            <input type="text" name="q" value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>" placeholder="Search user...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
 
     <table>
         <tr>
@@ -123,17 +167,28 @@
             <th>Action</th>
         </tr>
 
-        <?php foreach ($users as $user): ?>
+        <?php if (!empty($users)): ?>
+            <?php foreach ($users as $user): ?>
+                <tr>
+                    <td><?= $user['id']; ?></td>
+                    <td><?= $user['username']; ?></td>
+                    <td><?= $user['email']; ?></td>
+                    <td>
+                        <a href="<?= site_url('user/update/'.$user['id']); ?>">Edit</a> |
+                        <a href="<?= site_url('user/delete/'.$user['id']); ?>" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
             <tr>
-                <td><?= $user['id']; ?></td>
-                <td><?= $user['username']; ?></td>
-                <td><?= $user['email']; ?></td>
-                <td>
-                    <a href="<?= site_url('user/update/'.$user['id']); ?>">Edit</a> |
-                    <a href="<?= site_url('user/delete/'.$user['id']); ?>" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
-                </td>
+                <td colspan="4">No users found.</td>
             </tr>
-        <?php endforeach; ?>
+        <?php endif; ?>
     </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <?= isset($page) ? $page : ''; ?>
+    </div>
 </body>
 </html>
