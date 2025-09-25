@@ -10,37 +10,7 @@ class UserController extends Controller {
         $this->call->model('UserModel'); // make sure model is loaded
     }
 
-    public function create() {
-        if($this->form_validation->submitted()){
-            $username = $this->io->post('username');
-            $email    = $this->io->post('email');
-
-            $this->UserModel->create($username, $email);
-            redirect('get_all');
-        }
-        $this->call->view('user/create');
-    }
-
-    public function update($id) {
-        $user = $this->UserModel->get_one($id);
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'];
-            $email    = $_POST['email'];
-
-            $this->UserModel->update($id, $username, $email);
-            redirect('get_all');
-        }
-
-        $this->call->view('user/update', ['user' => $user]);
-    }
-
-    public function delete($id) {
-        $this->UserModel->delete($id);
-        redirect('get_all');
-    }
-
-    public function get_all() 
+    public function index()
     {
         // ✅ Current page
         $page = 1;
@@ -71,20 +41,61 @@ class UserController extends Controller {
             'page_delimiter' => '&page='
         ]);
         
-        $this->pagination->set_theme('bootstrap'); // or tailwind
+        $this->pagination->set_theme('bootstrap'); // or tailwind, custom
 
         // ✅ Initialize pagination
         $this->pagination->initialize(
             $total_rows, 
             $records_per_page, 
             $page, 
-            site_url('get_all').'?q='.$q
+            site_url('/').'?q='.$q
         );
 
         // ✅ Paginated links
         $data['page'] = $this->pagination->paginate();
         $data['search'] = $q;
 
-        $this->call->view('user/get_all', $data);
+        $this->call->view('user/view', $data);
+    }
+
+    public function create()
+    {
+        if ($this->io->method() == 'post') {
+            $username = $this->io->post('username');
+            $email    = $this->io->post('email');
+
+            $data = [
+                'username' => $username,
+                'email'    => $email
+            ];
+
+            $this->UserModel->insert($data);
+            redirect('/');
+        } else {
+            $this->call->view('user/create');
+        }
+    }
+
+    public function update($id)
+    {
+        $data['user'] = $this->UserModel->find($id);
+
+        if ($this->io->method() == 'post') {
+            $updateData = [
+                'username' => $this->io->post('username'),
+                'email'    => $this->io->post('email')
+            ];
+
+            $this->UserModel->update($id, $updateData);
+            redirect('/');
+        } else {
+            $this->call->view('user/update', $data);
+        }
+    }
+
+    public function delete($id)
+    {
+        $this->UserModel->delete($id);
+        redirect('/');
     }
 }
