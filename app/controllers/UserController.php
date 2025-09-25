@@ -10,18 +10,19 @@ class UserController extends Controller {
         $this->call->model('UserModel');
     }
 
+    // ✅ List with pagination + search
     public function index()
     {
-        // Current page
+        // Current page (default 1)
         $page = $this->io->get('page') ? (int)$this->io->get('page') : 1;
 
-        // Search keyword
+        // Search keyword (default empty)
         $q = $this->io->get('q') ? trim($this->io->get('q')) : '';
 
         // Records per page
         $records_per_page = 5;
 
-        // Get paginated data
+        // Get paginated users from model
         $all = $this->UserModel->page($q, $records_per_page, $page);
         $data['users'] = $all['records'];
         $total_rows = $all['total_rows'];
@@ -41,7 +42,7 @@ class UserController extends Controller {
             $total_rows, 
             $records_per_page, 
             $page, 
-            site_url('/') . '?q=' . $q
+            site_url('user') . '?q=' . $q // 👈 fixed base URL (not just "/")
         );
 
         $data['page']   = $this->pagination->paginate();
@@ -50,6 +51,7 @@ class UserController extends Controller {
         $this->call->view('user/view', $data);
     }
 
+    // ✅ Create user
     public function create()
     {
         if ($this->io->method() == 'post') {
@@ -58,12 +60,13 @@ class UserController extends Controller {
                 'email'    => $this->io->post('email')
             ];
             $this->UserModel->insert($data);
-            redirect('/');
+            redirect('user'); // 👈 redirect back to user list
         } else {
             $this->call->view('user/create');
         }
     }
 
+    // ✅ Update user
     public function update($id)
     {
         $data['user'] = $this->UserModel->find($id);
@@ -74,15 +77,16 @@ class UserController extends Controller {
                 'email'    => $this->io->post('email')
             ];
             $this->UserModel->update($id, $updateData);
-            redirect('/');
+            redirect('user'); // 👈 redirect back to user list
         } else {
             $this->call->view('user/update', $data);
         }
     }
 
+    // ✅ Delete user
     public function delete($id)
     {
         $this->UserModel->delete($id);
-        redirect('/');
+        redirect('user'); // 👈 redirect back to user list
     }
 }
