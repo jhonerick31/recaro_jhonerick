@@ -43,7 +43,13 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 |
 */
 
+// Default route → redirect to user list
 $router->get('/', 'UserController::index');
-$router->match('/user/create', 'UserController::create', ['GET', 'POST']);
-$router->match('/user/update/{id}', 'UserController::update', ['GET', 'POST']);
-$router->get('/user/delete/{id}', 'UserController::delete');
+
+// Grouped user routes
+$router->group('/user', function($router) {
+    $router->get('/', 'UserController::index');                       // List users with search + pagination
+    $router->match('/create', 'UserController::create', ['GET','POST']); // Create user
+    $router->match('/update/{id}', 'UserController::update', ['GET','POST']); // Update user
+    $router->get('/delete/{id}', 'UserController::delete');           // Delete user
+});
