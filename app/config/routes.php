@@ -43,21 +43,7 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 |
 */
 
-$router->get('/', 'UserController::index'); // homepage → user list with search & pagination
-
-// Users list + pagination
-$router->get('/user', 'UserController::index'); 
-$router->get('/user/{page}', 'UserController::index'); 
-
-// Create user (form + submit)
+$router->get('/', 'UserController::index');
 $router->match('/user/create', 'UserController::create', ['GET', 'POST']);
-
-// Update user (requires ID)
 $router->match('/user/update/{id}', 'UserController::update', ['GET', 'POST']);
-
-// Delete user (requires ID)
 $router->get('/user/delete/{id}', 'UserController::delete');
-
-// Search users
-$router->match('/user/search', 'UserController::index', ['GET', 'POST']);
-
