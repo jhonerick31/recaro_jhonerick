@@ -1,77 +1,79 @@
 <?php
 defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 
-/**
- * Model: UserModel
- * 
- * Extended with CRUD and pagination logic for `users` table.
- */
-class UserModel extends Model {
+class UserModel extends Model
+{
     protected $table = 'users';
     protected $primary_key = 'id';
 
-    public function __construct()
+    // ✅ Insert user
+    public function insert($data)
     {
-        parent::__construct();
-    }
-
-    // Create user
-    public function create($username, $email) {
-        $data = [
-            'username' => $username,
-            'email'    => $email
-        ];
         return $this->db->table($this->table)->insert($data);
     }
 
-    // Get single user by ID
-    public function get_one($id) {
+    // ✅ Get all (no pagination)
+    public function all()
+    {
+        return $this->db->table($this->table)
+                        ->order_by($this->primary_key, 'DESC')
+                        ->get_all();
+    }
+
+    // ✅ Find one user by ID
+    public function find($id)
+    {
         return $this->db->table($this->table)
                         ->where($this->primary_key, $id)
                         ->get();
     }
 
-    // Update user
-    public function update($id, $username, $email) {
-        $data = [
-            'username' => $username,
-            'email'    => $email
-        ];
+    // ✅ Update (must match Model::update($id, $data))
+    public function update($id, $data)
+    {
         return $this->db->table($this->table)
                         ->where($this->primary_key, $id)
                         ->update($data);
     }
 
-    // Delete user
-    public function delete($id) {
+    // ✅ Delete
+    public function delete($id)
+    {
         return $this->db->table($this->table)
                         ->where($this->primary_key, $id)
                         ->delete();
     }
 
-    // Pagination + search
-    public function page($q = '', $records_per_page = null, $page = null) {
-        if (is_null($page)) {
-            return $this->db->table($this->table)->get_all();
-        } else {
-            $query = $this->db->table($this->table);
+    // ✅ Pagination + Search
+    public function page($q = '', $limit = 5, $page = 1)
+    {
+        $offset = ($page - 1) * $limit;
 
-            if (!empty($q)) {
-                $query->like('id', '%'.$q.'%')
-                      ->or_like('username', '%'.$q.'%')
-                      ->or_like('email', '%'.$q.'%');
-            }
+        // Base query
+        $builder = $this->db->table($this->table);
 
-            // Count total rows
-            $countQuery = clone $query;
-            $data['total_rows'] = $countQuery->select_count('*', 'count')
-                                             ->get()['count'];
-
-            // Paginated records
-            $data['records'] = $query->pagination($records_per_page, $page)
-                                     ->get_all();
-
-            return $data;
+        // Apply search
+        if (!empty($q)) {
+            $builder->like('username', $q)
+                    ->or_like('email', $q);
         }
+
+        // Get filtered records
+        $records = $builder->limit($limit, $offset)
+                           ->order_by($this->primary_key, 'DESC')
+                           ->get_all();
+
+        // Count total rows
+        $count_builder = $this->db->table($this->table);
+        if (!empty($q)) {
+            $count_builder->like('username', $q)
+                          ->or_like('email', $q);
+        }
+        $total_rows = $count_builder->count();
+
+        return [
+            'records'    => $records,
+            'total_rows' => $total_rows
+        ];
     }
 }
