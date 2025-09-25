@@ -20,13 +20,20 @@ class UserModel extends Model
                         ->get_all();
     }
 
-    // Find one user by ID
-    public function find($id)
-    {
-        return $this->db->table($this->table)
-                        ->where($this->primary_key, $id)
-                        ->get();
+   // ✅ Find one user by ID
+public function find($id, $with_deleted = false)
+{
+    $builder = $this->db->table($this->table)
+                        ->where($this->primary_key, $id);
+
+    // if $with_deleted is true, don't filter deleted rows
+    if (!$with_deleted && method_exists($this, 'withoutDeleted')) {
+        $builder = $this->withoutDeleted($builder);
     }
+
+    return $builder->get();
+}
+
 
     // Update (must match Model::update($id, $data))
     public function update($id, $data)
