@@ -6,13 +6,13 @@ class UserModel extends Model
     protected $table = 'users';
     protected $primary_key = 'id';
 
-    // ✅ Insert user
+    // Insert user
     public function insert($data)
     {
         return $this->db->table($this->table)->insert($data);
     }
 
-    // ✅ Get all (no pagination)
+    // Get all (no pagination)
     public function all()
     {
         return $this->db->table($this->table)
@@ -20,7 +20,7 @@ class UserModel extends Model
                         ->get_all();
     }
 
-    // ✅ Find one user by ID
+    // Find one user by ID
     public function find($id)
     {
         return $this->db->table($this->table)
@@ -28,7 +28,7 @@ class UserModel extends Model
                         ->get();
     }
 
-    // ✅ Update (must match Model::update($id, $data))
+    // Update (must match Model::update($id, $data))
     public function update($id, $data)
     {
         return $this->db->table($this->table)
@@ -36,7 +36,7 @@ class UserModel extends Model
                         ->update($data);
     }
 
-    // ✅ Delete
+    // Delete
     public function delete($id)
     {
         return $this->db->table($this->table)
@@ -44,7 +44,7 @@ class UserModel extends Model
                         ->delete();
     }
 
-    // ✅ Pagination + Search
+    // Pagination + Search
     public function page($q = '', $limit = 5, $page = 1)
     {
         $offset = ($page - 1) * $limit;

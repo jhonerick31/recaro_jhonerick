@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Users</title>
+    <title>User List</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,10 +22,12 @@
 
         .top-bar {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            width: 80%;
+            width: 90%;
             margin: 0 auto 20px auto;
+            gap: 10px;
         }
 
         .create-btn {
@@ -43,6 +45,11 @@
             background: #0099ff;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 122, 204, 0.6);
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
         }
 
         .search-form input[type="text"] {
@@ -71,7 +78,7 @@
         }
 
         table {
-            width: 80%;
+            width: 90%;
             margin: 0 auto;
             border-collapse: collapse;
             box-shadow: 0px 8px 20px rgba(0,255,136,0.4);
@@ -140,7 +147,7 @@
         }
 
         .pagination {
-            width: 80%;
+            width: 90%;
             margin: 20px auto;
             text-align: center;
         }
@@ -153,8 +160,8 @@
     <div class="top-bar">
         <a href="<?= site_url('user/create'); ?>" class="create-btn">+ Add New User</a>
         
-        <form method="get" action="<?= site_url('user'); ?>" class="search-form">
-            <input type="text" name="q" value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>" placeholder="Search user...">
+        <form method="get" action="<?= site_url('/'); ?>" class="search-form">
+            <input type="text" name="q" value="<?= htmlspecialchars($search ?? '') ?>" placeholder="Search user...">
             <button type="submit">Search</button>
         </form>
     </div>
@@ -174,7 +181,7 @@
                     <td><?= $user['username']; ?></td>
                     <td><?= $user['email']; ?></td>
                     <td>
-                        <a href="<?= site_url('user/update/'.$user['id']); ?>">Edit</a> |
+                        <a href="<?= site_url('user/update/'.$user['id']); ?>">Edit</a>
                         <a href="<?= site_url('user/delete/'.$user['id']); ?>" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
                     </td>
                 </tr>
@@ -188,7 +195,7 @@
 
     <!-- Pagination -->
     <div class="pagination">
-        <?= isset($page) ? $page : ''; ?>
+        <?= $page ?? '' ?>
     </div>
 </body>
 </html>
